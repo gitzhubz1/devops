@@ -1,10 +1,9 @@
-name: Semgrep Security Scan
+name: Semgrep
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+  push:
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -12,19 +11,25 @@ permissions:
 
 jobs:
   semgrep:
-    name: Scan with Semgrep
+    name: Semgrep scan
     runs-on: ubuntu-latest
-
-    # Fork PRs and Dependabot do not receive the required secret.
-    if: >-
-      github.actor != 'dependabot[bot]' &&
-      (github.event_name != 'pull_request' ||
-       github.event.pull_request.head.repo.full_name == github.repository)
+    timeout-minutes: 20
 
     container:
       image: semgrep/semgrep
 
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
     steps:
+      - name: Check authentication token
+        shell: sh
+        run: |
+          if [ -z "${SEMGREP_APP_TOKEN:-}" ]; then
+            echo "::error::SEMGREP_APP_TOKEN is missing or unavailable."
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -32,6 +37,4 @@ jobs:
           persist-credentials: false
 
       - name: Run Semgrep
-        run: semgrep ci
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        run: semgrep ci --no-suppress-errors
