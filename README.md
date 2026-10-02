@@ -11,7 +11,7 @@ Tools and Technologies
 	•	AKS (Azure Kubernetes Service): Orchestration
 	•	ACR (Azure Container Registry): Container registry
 
-Key Achievements
+Key Achievements 123
 	•	Automated build, test, and deployment stages, reducing deployment time by 50%.
 	•	Implemented rolling updates and blue-green deployments to minimize downtime.
 
