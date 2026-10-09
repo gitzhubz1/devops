@@ -2,18 +2,10 @@ pipeline {
   agent any
 
   stages {
-    stage('Install dependencies') {
-      steps {
-        sh 'npm ci'
-      }
-    }
-
-    stage('Snyk scan') {
+    stage('Snyk dependency scan') {
       steps {
         withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
-          sh '''
-            npx --yes snyk test
-          '''
+          sh 'npx --yes snyk test'
         }
       }
     }
